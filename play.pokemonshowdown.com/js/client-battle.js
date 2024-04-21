@@ -807,10 +807,25 @@
 				);
 				this.$controls.html(
 					'<div class="controls">' +
+					'<button id="startButton3">Start Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					moveControls + shiftControls + switchControls +
 					'</div>'
 				);
+
+				const startButton = document.getElementById('startButton3');
+				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
+				// const recognition = new SpeechRecognition();
+				const recognition = new webkitSpeechRecognition();
+	
+				recognition.onresult = (event) => {
+					const transcript = event.results[0][0].transcript;
+					console.log(`You said: ${transcript}`);
+				};
+				startButton.addEventListener('click', () => {
+					recognition.start();
+				});
+
 			}
 		},
 		displayParty: function (switchables, trapped) {
