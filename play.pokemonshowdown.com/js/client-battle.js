@@ -977,7 +977,7 @@
 			var buf = '<div class="controls">';
 			buf += this.getPlayerChoicesHTML();
 			console.log("HELP: I am adding a new button");
-			buf += '<button class="button" name="startButton">Start Speech Recognition</button>';
+			buf += '<button class="button" name="startButton" id="startButton">Start Speech Recognition</button>';
 			if (!this.battle.nearSide.name || !this.battle.farSide.name || !this.request) {
 				if (this.battle.kickingInactive) {
 					buf += '<p><button class="button" name="setTimer" value="off">Stop timer</button> <small>&larr; Your opponent has disconnected. This will give them more time to reconnect.</small></p>';
@@ -987,14 +987,16 @@
 			}
 			this.$controls.html(buf + '</div>');
 			const startButton = document.getElementById('startButton');
-			const recognition = new window.SpeechRecognition();
+			// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
+			// const recognition = new SpeechRecognition();
+			const recognition = new webkitSpeechRecognition();
 
 			recognition.onresult = (event) => {
-			const transcript = event.results[0][0].transcript;
-			console.log(`You said: ${transcript}`);
+				const transcript = event.results[0][0].transcript;
+				console.log(`You said: ${transcript}`);
 			};
 			startButton.addEventListener('click', () => {
-			recognition.start();
+				recognition.start();
 			});
 		},
 
