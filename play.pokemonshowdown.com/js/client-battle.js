@@ -396,6 +396,7 @@
 						switchOutFlags: {}
 					};
 				}
+				console.log("HELP: update player control update moves");
 				this.updateMoveControls(type);
 				break;
 
@@ -416,6 +417,8 @@
 						this.choice.canSwitch = faintedLength - this.choice.freedomDegrees;
 					}
 				}
+				console.log("HELP: update player update switch controls");
+
 				this.updateSwitchControls(type);
 				break;
 
@@ -456,10 +459,14 @@
 					}
 					this.choice.choices = new Array(this.choice.count);
 				}
+				console.log("HELP: update player update team controls moves");
+
 				this.updateTeamControls(type);
 				break;
 
 			default:
+				console.log("HELP: update player deault wait controls update moves");
+
 				this.updateWaitControls();
 				break;
 			}
@@ -652,13 +659,31 @@
 					}
 				}
 
+
+
 				this.$controls.html(
+					
 					'<div class="controls">' +
+					'<button id="startButton">Start Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					'<div class="switchmenu" style="display:block">' + targetMenus[0] + '<div style="clear:both"></div> </div>' +
 					'<div class="switchmenu" style="display:block">' + targetMenus[1] + '</div>' +
 					'</div>'
 				);
+
+				console.log("HELP: START BUTTON");
+				const startButton = document.getElementById('startButton');
+				const recognition = new window.SpeechRecognition();
+				
+				recognition.onresult = (event) => {
+				  const transcript = event.results[0][0].transcript;
+				  console.log(`You said: ${transcript}`);
+				};
+				startButton.addEventListener('click', () => {
+				  recognition.start();
+				});
+				console.log("HELP: END START");
+
 			} else {
 				// Move chooser
 				var hpBar = '<small class="' + (hpRatio < 0.2 ? 'critical' : hpRatio < 0.5 ? 'weak' : 'healthy') + '">HP ' + switchables[pos].hp + '/' + switchables[pos].maxhp + '</small>';
@@ -932,9 +957,10 @@
 					switchMenu += '<button name="chooseTeamPreview" value="' + i + '" class="has-tooltip" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '"><span class="picon" style="' + Dex.getPokemonIcon(pokemon) + '"></span>' + BattleLog.escapeHTML(pokemon.name) + '</button> ';
 				}
 			}
-
+			console.log("HELP: I am rendering a start button2");
 			var controls = (
 				'<div class="switchcontrols">' +
+				'<button name="Staring">STARGING</button>' +
 				'<div class="switchselect"><button name="selectSwitch">' + (this.choice.done ? '' + "Choose a Pokémon for slot " + (this.choice.done + 1) : "Choose Lead") + '</button></div>' +
 				'<div class="switchmenu">' + switchMenu + '</div>' +
 				'</div>'
@@ -950,6 +976,8 @@
 		updateWaitControls: function () {
 			var buf = '<div class="controls">';
 			buf += this.getPlayerChoicesHTML();
+			console.log("HELP: I am adding a new button");
+			buf += '<button class="button" name="startButton">Start Speech Recognition</button>';
 			if (!this.battle.nearSide.name || !this.battle.farSide.name || !this.request) {
 				if (this.battle.kickingInactive) {
 					buf += '<p><button class="button" name="setTimer" value="off">Stop timer</button> <small>&larr; Your opponent has disconnected. This will give them more time to reconnect.</small></p>';
@@ -958,6 +986,16 @@
 				}
 			}
 			this.$controls.html(buf + '</div>');
+			const startButton = document.getElementById('startButton');
+			const recognition = new window.SpeechRecognition();
+
+			recognition.onresult = (event) => {
+			const transcript = event.results[0][0].transcript;
+			console.log(`You said: ${transcript}`);
+			};
+			startButton.addEventListener('click', () => {
+			recognition.start();
+			});
 		},
 
 		getPlayerChoicesHTML: function () {
@@ -1260,6 +1298,8 @@
 		chooseMove: function (pos, e) {
 			if (!this.choice) return;
 			this.tooltips.hideTooltip();
+			console.log("help: After chooseMOVEeeeeee")
+			
 
 			if (pos !== undefined) { // pos === undefined if called by chooseMoveTarget()
 				var nearActive = this.battle.nearSide.active;
@@ -1278,6 +1318,7 @@
 				if (nearActive.length > 1 && target in choosableTargets) {
 					this.choice.type = 'movetarget';
 					this.choice.moveTarget = target;
+					console.log("HELP: updating control for player");
 					this.updateControlsForPlayer();
 					return false;
 				}
@@ -1311,6 +1352,7 @@
 				if (this.choice.freedomDegrees >= 1) {
 					// Request selection of a Pokémon that will be switched out.
 					this.choice.type = 'switchposition';
+					console.log("HELP: updating through swithc");
 					this.updateControlsForPlayer();
 					return false;
 				}
@@ -1455,7 +1497,10 @@
 			this.closeNotification('choice');
 
 			this.choice.waiting = true;
+			console.log("HELP: updating control by end turn");
 			this.updateControlsForPlayer();
+			console.log("HELP: done updating control by end turn");
+
 		},
 		undoChoice: function (pos) {
 			this.send('/undo');
