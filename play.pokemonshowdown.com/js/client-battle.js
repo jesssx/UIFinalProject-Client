@@ -821,6 +821,8 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
+					console.log(`sending: ${transcript}`)
+					this.sendDecision(transcript);
 				};
 				startButton.addEventListener('click', () => {
 					recognition.start();
