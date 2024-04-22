@@ -821,8 +821,19 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
-					console.log(`sending: ${transcript}`)
-					this.sendDecision(transcript);
+
+					let cleaned_string = transcript.toLowerCase();
+					if (cleaned_string.includes("use")) {
+						let move = cleaned_string.split("use")[1].trim();
+						let send_string = `move ${move}`;
+						console.log(`sending: ${send_string}`)
+						this.sendDecision(send_string);
+					} else if (cleaned_string.includes("switch")) {
+						let switchTo = cleaned_string.split("switch")[1].trim();
+						let send_string = `switch ${switchTo}`;
+						console.log(`sending: ${send_string}`)
+						this.sendDecision(send_string);
+					}
 				};
 				startButton.addEventListener('click', () => {
 					recognition.start();
