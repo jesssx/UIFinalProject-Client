@@ -822,17 +822,17 @@
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
 
-					let cleaned_string = transcript.toLowerCase();
-					if (cleaned_string.includes("use")) {
-						let move = cleaned_string.split("use")[1].trim();
-						let send_string = `move ${move}`;
-						console.log(`sending: ${send_string}`)
-						this.sendDecision(send_string);
-					} else if (cleaned_string.includes("switch")) {
-						let switchTo = cleaned_string.split("switch")[1].trim();
-						let send_string = `switch ${switchTo}`;
-						console.log(`sending: ${send_string}`)
-						this.sendDecision(send_string);
+					let cleanedString = transcript.toLowerCase();
+					if (cleanedString.includes("use")) {
+						let move = cleanedString.split("use")[1].trim();
+						let sendString = `move ${move}`;
+						console.log(`sending: ${sendString}`)
+						this.sendDecision(sendString);
+					} else if (cleanedString.includes("switch")) {
+						let switchTo = cleanedString.split("switch")[1].trim();
+						let sendString = `switch ${switchTo}`;
+						console.log(`sending: ${sendString}`)
+						this.sendDecision(sendString);
 					}
 				};
 				startButton.addEventListener('click', () => {
