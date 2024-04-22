@@ -664,25 +664,11 @@
 				this.$controls.html(
 					
 					'<div class="controls">' +
-					'<button id="startButton">Start Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					'<div class="switchmenu" style="display:block">' + targetMenus[0] + '<div style="clear:both"></div> </div>' +
 					'<div class="switchmenu" style="display:block">' + targetMenus[1] + '</div>' +
 					'</div>'
 				);
-
-				console.log("HELP: START BUTTON");
-				const startButton = document.getElementById('startButton');
-				const recognition = new window.SpeechRecognition();
-				
-				recognition.onresult = (event) => {
-				  const transcript = event.results[0][0].transcript;
-				  console.log(`You said: ${transcript}`);
-				};
-				startButton.addEventListener('click', () => {
-				  recognition.start();
-				});
-				console.log("HELP: END START");
 
 			} else {
 				// Move chooser
@@ -833,6 +819,10 @@
 						let sendString = `switch ${switchTo}`;
 						console.log(`sending: ${sendString}`)
 						this.sendDecision(sendString);
+					} else {
+						//did not recognize keywords
+						this.popupErrorVoice();
+
 					}
 				};
 				startButton.addEventListener('click', () => {
@@ -1005,7 +995,6 @@
 			var buf = '<div class="controls">';
 			buf += this.getPlayerChoicesHTML();
 			console.log("HELP: I am adding a new button");
-			buf += '<button class="button" name="startButton" id="startButton">Start Speech Recognition</button>';
 			if (!this.battle.nearSide.name || !this.battle.farSide.name || !this.request) {
 				if (this.battle.kickingInactive) {
 					buf += '<p><button class="button" name="setTimer" value="off">Stop timer</button> <small>&larr; Your opponent has disconnected. This will give them more time to reconnect.</small></p>';
@@ -1014,18 +1003,6 @@
 				}
 			}
 			this.$controls.html(buf + '</div>');
-			const startButton = document.getElementById('startButton');
-			// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
-			// const recognition = new SpeechRecognition();
-			const recognition = new webkitSpeechRecognition();
-
-			recognition.onresult = (event) => {
-				const transcript = event.results[0][0].transcript;
-				console.log(`You said: ${transcript}`);
-			};
-			startButton.addEventListener('click', () => {
-				recognition.start();
-			});
 		},
 
 		getPlayerChoicesHTML: function () {
@@ -1327,9 +1304,7 @@
 		// choice buttons
 		chooseMove: function (pos, e) {
 			if (!this.choice) return;
-			this.tooltips.hideTooltip();
-			console.log("help: After chooseMOVEeeeeee")
-			
+			this.tooltips.hideTooltip();			
 
 			if (pos !== undefined) { // pos === undefined if called by chooseMoveTarget()
 				var nearActive = this.battle.nearSide.active;
@@ -1437,6 +1412,9 @@
 			}
 
 			this.endTurn();
+		},
+		popupErrorVoice: function () {
+			app.addPopupMessage("Recognition Failed: Please repeat");
 		},
 		chooseDisabled: function (data) {
 			this.tooltips.hideTooltip();
