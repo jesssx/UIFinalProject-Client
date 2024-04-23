@@ -815,7 +815,8 @@
 						console.log(`sending: ${sendString}`)
 						this.sendDecision(sendString);
 					} else if (cleanedString.includes("switch")) {
-						let switchTo = cleanedString.split("switch")[1].trim();
+						// "switch to pokemonName"
+						let switchTo = cleanedString.split("to")[1].trim();
 						let sendString = `switch ${switchTo}`;
 						console.log(`sending: ${sendString}`)
 						this.sendDecision(sendString);
@@ -946,11 +947,38 @@
 				);
 				this.$controls.html(
 					'<div class="controls">' +
+					'<button id="startButton3">Start Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					controls +
 					'</div>'
 				);
 				this.selectSwitch();
+
+				const startButton = document.getElementById('startButton3');
+				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
+				// const recognition = new SpeechRecognition();
+				const recognition = new webkitSpeechRecognition();
+	
+				recognition.onresult = (event) => {
+					const transcript = event.results[0][0].transcript;
+					console.log(`You said: ${transcript}`);
+
+					let cleanedString = transcript.toLowerCase();
+					if (cleanedString.includes("switch")) {
+						// "switch to pokemonName"
+						let switchTo = cleanedString.split("to")[1].trim();
+						let sendString = `switch ${switchTo}`;
+						console.log(`sending: ${sendString}`)
+						this.sendDecision(sendString);
+					} else {
+						//did not recognize keywords
+						this.popupErrorVoice();
+
+					}
+				};
+				startButton.addEventListener('click', () => {
+					recognition.start();
+				});
 			}
 		},
 		updateTeamControls: function (type) {
