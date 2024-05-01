@@ -793,13 +793,13 @@
 				);
 				this.$controls.html(
 					'<div class="controls">' +
-					'<button id="startButton3">Start Speech Recognition</button>' + 
+					'<button id="startButton">Start Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					moveControls + shiftControls + switchControls +
 					'</div>'
 				);
 
-				const startButton = document.getElementById('startButton3');
+				const startButton = document.getElementById('startButton');
 				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
 				// const recognition = new SpeechRecognition();
 				const recognition = new webkitSpeechRecognition();
