@@ -20,7 +20,7 @@ Config.whitelist = [
 Config.defaultserver = {
 	id: 'showdown',
 	host: '0.0.0.0',
-	port: process.env.PORT || 10000,
+	port: process.env.PORT || 443,
 	httpport: 8000,
 	altport: 80,
 	registered: true

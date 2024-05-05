@@ -1,7 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 
-const PORT= process.env.PORT || 10000; 
+const PORT= process.env.PORT || 443; 
 
 fs.readFile('./play.pokemonshowdown.com/testclient.html', function (err, html) {
 
