@@ -920,9 +920,9 @@
 
 					}
 				};
-				// startButton.addEventListener('click', () => {
-				// 	recognition.start();
-				// });
+				startButton.addEventListener('click', () => {
+					recognition.start();
+				});
 
 			}
 		},
