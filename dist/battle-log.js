@@ -1,0 +1,1 @@
+../play.pokemonshowdown.com/js/battle-log.js
