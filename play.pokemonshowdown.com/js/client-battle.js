@@ -1124,7 +1124,7 @@
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`)
 						this.sendDecision(sendString);
-					} else if (cleanedString.include("choose")) {
+					} else if (cleanedString.includes("choose")) {
 						let switchTo = cleanedString.split("choose")[1].trim();
 
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
