@@ -26,7 +26,7 @@ app.use(express.static('./play.pokemonshowdown.com'));
 
 // Define route to serve index.html
 app.get('*', (req, res) => {
-  res.sendFile('./play.pokemonshowdown.com/index.html');
+  res.sendFile('./play.pokemonshowdown.com/index.template.html');
 });
 
 // Start the server
