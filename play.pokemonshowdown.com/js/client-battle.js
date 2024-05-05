@@ -884,6 +884,7 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
+					this.send(`You said: ${transcript}`);
 
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("use")) {
