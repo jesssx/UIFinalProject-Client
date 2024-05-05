@@ -19,7 +19,7 @@ Config.whitelist = [
 // address bar is `Config.routes.client`.
 Config.defaultserver = {
 	id: 'showdown',
-	host: '0.0.0.0',
+	host: 'sim3.psim.us',
 	port: process.env.PORT || 443,
 	httpport: 8000,
 	altport: 80,
