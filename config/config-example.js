@@ -20,7 +20,7 @@ Config.whitelist = [
 Config.defaultserver = {
 	id: 'showdown',
 	host: 'sim3.psim.us',
-	port: process.env.PORT || 443,
+	port: 443,
 	httpport: 8000,
 	altport: 80,
 	registered: true
