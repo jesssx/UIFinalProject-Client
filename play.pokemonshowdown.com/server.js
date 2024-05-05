@@ -1,7 +1,7 @@
 // var http = require('http');
 // var fs = require('fs');
 
-const PORT= 443; 
+const PORT= 10000; 
 
 // fs.readFile('./play.pokemonshowdown.com/index.html', function (err, html) {
 
