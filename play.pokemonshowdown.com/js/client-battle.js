@@ -225,16 +225,6 @@
 					this.battle.instantAdd(logLine);
 				} else {
 					this.battle.stepQueue.push(logLine);
-					
-					// const utterance = new SpeechSynthesisUtterance(logLine);
-
-					// // Select a voice
-					// const voices = speechSynthesis.getVoices();
-					// utterance.voice = voices[0]; // Choose a specific voice
-				  
-					// // Speak the text
-					// window.speechSynthesis.speak(utterance);
-					// console.log("HELP LOGLINE: ", logLine);
 				}
 			}
 			this.battle.add();
@@ -905,9 +895,19 @@
 						let sendString = `move ${nearestMove}`;
 						console.log(`sending: ${sendString}`)
 						this.sendDecision(sendString);
+						
 					} else if (cleanedString.includes("switch")) {
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("to")[1].trim();
+
+						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+
+						let sendString = `switch ${nearestPokemon}`;
+						console.log(`sending: ${sendString}`)
+						this.sendDecision(sendString);
+					} else if (cleanedString.includes("choose")) {
+						// "switch to pokemonName"
+						let switchTo = cleanedString.split("choose")[1].trim();
 
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
@@ -1111,11 +1111,20 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
+					this.send(`You said: ${transcript}`);
 
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("switch")) {
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("to")[1].trim();
+
+						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+
+						let sendString = `switch ${nearestPokemon}`;
+						console.log(`sending: ${sendString}`)
+						this.sendDecision(sendString);
+					} else if (cleanedString.include("choose")) {
+						let switchTo = cleanedString.split("choose")[1].trim();
 
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
@@ -1301,7 +1310,6 @@
 				if (message[i]) buf += message[i] + ',';
 			}
 			this.send(buf.substr(0, buf.length - 1) + '|' + this.request.rqid);
-			console.log("HELP SENDSTRING:", buf.substr(0, buf.length - 1) + '|' + this.request.rqid);
 		},
 		request: null,
 		receiveRequest: function (request, choiceText) {
@@ -1592,7 +1600,7 @@
 			this.endTurn();
 		},
 		popupErrorVoice: function () {
-			app.addPopupMessage("Recognition Failed: Please repeat");
+			app.addPopupMessage("Understanding Failed: Please try again");
 		},
 		chooseDisabled: function (data) {
 			this.tooltips.hideTooltip();
