@@ -1,22 +1,35 @@
-var http = require('http');
-var fs = require('fs');
+// var http = require('http');
+// var fs = require('fs');
 
-const PORT= process.env.PORT || 443; 
+const PORT= process.env.PORT || 10000; 
 
-fs.readFile('./play.pokemonshowdown.com/index.html', function (err, html) {
+// fs.readFile('./play.pokemonshowdown.com/index.html', function (err, html) {
 
-    if (err) throw err;    
+//     if (err) throw err;    
 
-    http.createServer(function(request, response) {  
-        response.writeHeader(200, {"Content-Type": "text/html"});  
-        response.write(html);  
-        response.end();  
-    }).listen(PORT);
-});
+//     http.createServer(function(request, response) {  
+//         response.writeHeader(200, {"Content-Type": "text/html"});  
+//         response.write(html);  
+//         response.end();  
+//     }).listen(PORT);
+// });
 
-// var express = require('express');
-// var app = express();
-// app.use(express.static(__dirname + '/public')); //__dir and not _dir
+var express = require('express');
+var app = express();
+// app.use(express.static('./play.pokemonshowdown.com/index.html')); //__dir and not _dir
 // // var port = 8000; // you can use any port
 // app.listen(PORT);
-// // console.log('server on' + port);
+// console.log('server on' + port);
+
+
+app.use(express.static('./play.pokemonshowdown.com'));
+
+// Define route to serve index.html
+app.get('*', (req, res) => {
+  res.sendFile('./play.pokemonshowdown.com/index.html');
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
