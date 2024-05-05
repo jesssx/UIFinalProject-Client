@@ -225,10 +225,21 @@
 					this.battle.instantAdd(logLine);
 				} else {
 					this.battle.stepQueue.push(logLine);
+					
+					// const utterance = new SpeechSynthesisUtterance(logLine);
+
+					// // Select a voice
+					// const voices = speechSynthesis.getVoices();
+					// utterance.voice = voices[0]; // Choose a specific voice
+				  
+					// // Speak the text
+					// window.speechSynthesis.speak(utterance);
+					// console.log("HELP LOGLINE: ", logLine);
 				}
 			}
 			this.battle.add();
 			if (Dex.prefs('noanim')) this.battle.seekTurn(Infinity);
+			console.log("HELP REQ BATTLE: ", this.request, this.battle);
 			this.updateControls();
 		},
 		toggleMessages: function (user) {
@@ -396,7 +407,6 @@
 						switchOutFlags: {}
 					};
 				}
-				console.log("HELP: update player control update moves");
 				this.updateMoveControls(type);
 				break;
 
@@ -417,7 +427,6 @@
 						this.choice.canSwitch = faintedLength - this.choice.freedomDegrees;
 					}
 				}
-				console.log("HELP: update player update switch controls");
 
 				this.updateSwitchControls(type);
 				break;
@@ -459,13 +468,11 @@
 					}
 					this.choice.choices = new Array(this.choice.count);
 				}
-				console.log("HELP: update player update team controls moves");
 
 				this.updateTeamControls(type);
 				break;
 
 			default:
-				console.log("HELP: update player deault wait controls update moves");
 
 				this.updateWaitControls();
 				break;
@@ -882,6 +889,7 @@
 				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
 				// const recognition = new SpeechRecognition();
 				const recognition = new webkitSpeechRecognition();
+				// recognition.start();
 	
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
@@ -912,9 +920,9 @@
 
 					}
 				};
-				startButton.addEventListener('click', () => {
-					recognition.start();
-				});
+				// startButton.addEventListener('click', () => {
+				// 	recognition.start();
+				// });
 
 			}
 		},
@@ -1147,10 +1155,8 @@
 					switchMenu += '<button name="chooseTeamPreview" value="' + i + '" class="has-tooltip" data-tooltip="' + BattleLog.escapeHTML(tooltipArgs) + '"><span class="picon" style="' + Dex.getPokemonIcon(pokemon) + '"></span>' + BattleLog.escapeHTML(pokemon.name) + '</button> ';
 				}
 			}
-			console.log("HELP: I am rendering a start button2");
 			var controls = (
 				'<div class="switchcontrols">' +
-				'<button name="Staring">STARGING</button>' +
 				'<div class="switchselect"><button name="selectSwitch">' + (this.choice.done ? '' + "Choose a Pokémon for slot " + (this.choice.done + 1) : "Choose Lead") + '</button></div>' +
 				'<div class="switchmenu">' + switchMenu + '</div>' +
 				'</div>'
@@ -1166,7 +1172,6 @@
 		updateWaitControls: function () {
 			var buf = '<div class="controls">';
 			buf += this.getPlayerChoicesHTML();
-			console.log("HELP: I am adding a new button");
 			if (!this.battle.nearSide.name || !this.battle.farSide.name || !this.request) {
 				if (this.battle.kickingInactive) {
 					buf += '<p><button class="button" name="setTimer" value="off">Stop timer</button> <small>&larr; Your opponent has disconnected. This will give them more time to reconnect.</small></p>';
@@ -1296,6 +1301,7 @@
 				if (message[i]) buf += message[i] + ',';
 			}
 			this.send(buf.substr(0, buf.length - 1) + '|' + this.request.rqid);
+			console.log("HELP SENDSTRING:", buf.substr(0, buf.length - 1) + '|' + this.request.rqid);
 		},
 		request: null,
 		receiveRequest: function (request, choiceText) {
@@ -1677,10 +1683,7 @@
 			this.closeNotification('choice');
 
 			this.choice.waiting = true;
-			console.log("HELP: updating control by end turn");
 			this.updateControlsForPlayer();
-			console.log("HELP: done updating control by end turn");
-
 		},
 		undoChoice: function (pos) {
 			this.send('/undo');

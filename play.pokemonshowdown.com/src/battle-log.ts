@@ -346,6 +346,17 @@ export class BattleLog {
 			}
 			if (!line) return;
 			this.message(...this.parseLogMessage(line));
+
+			// Add in voice for turns
+			const utterance = new SpeechSynthesisUtterance(line);
+
+			// Select a voice
+			const voices = speechSynthesis.getVoices();
+			utterance.voice = voices[1]; // Choose a specific voice
+			
+			// Speak the text
+			window.speechSynthesis.speak(utterance);
+			
 			break;
 		}
 	}
