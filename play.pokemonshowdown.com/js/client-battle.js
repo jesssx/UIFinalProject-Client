@@ -7,6 +7,9 @@
 		minMainWidth: 956,
 		maxWidth: 1180,
 		initialize: function (data) {
+			this.recognitionChoice = false; 
+			this.recognitionMessage = '';
+
 			this.choice = undefined;
 			/** are move/switch/team-preview controls currently being shown? */
 			this.controlsShown = false;
@@ -359,6 +362,15 @@
 
 			var act = '';
 			var switchables = [];
+
+			console.log("What am i: ",this.request, " : ", this.choice);
+
+			// if (this.choice.waiting) {
+			// 	console.log("What am i: ",this.request, " : ", this.choice, " : ",  this.choice.waiting);
+			// } else {
+			// 	console.log("What am i: ",this.request, " : ", this.choice);
+
+			// }
 			if (this.request) {
 				// TODO: investigate when to do this
 				this.updateSide();
@@ -463,7 +475,6 @@
 				break;
 
 			default:
-
 				this.updateWaitControls();
 				break;
 			}
@@ -549,6 +560,9 @@
 			app.addPopup(TimerPopup, {room: this});
 		},
 		updateMoveControls: function (type) {
+			this.recognitionChoice = false;
+			this.recognitionMessage = '';
+
 			var switchables = this.request && this.request.side ? this.battle.myPokemon : [];
 
 			if (type !== 'movetarget') {
@@ -884,18 +898,37 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
-					this.send(`You said: ${transcript}`);
+					// this.send(`You said: ${transcript}`);
 
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("use")) {
 						let move = cleanedString.split("use")[1].trim();
-						console.log("possible moves");
-						console.log(moveNameList);
+						// console.log("possible moves");
+						// console.log(moveNameList);
 						const nearestMove = getNearestMoveName(move, moveNameList);
 
 						let sendString = `move ${nearestMove}`;
-						console.log(`sending: ${sendString}`)
+						console.log(`sending: ${sendString}`);
+
 						this.sendDecision(sendString);
+
+						let moveNumber = '0'; 
+						for (let i = 0; i < curActive.moves.length; i++) {
+							let currMove = curActive.moves[i];
+							let currMoveName = currMove.move.toLowerCase();
+							if (currMoveName === nearestMove) {
+								moveNumber = `${i + 1}`;
+								break;
+							}
+						}
+
+						this.recognitionChoice = true;
+						this.recognitionMessage = cleanedString; 
+
+						this.choice.waiting = true;
+						this.choice.choices = [`move ${moveNumber}`];
+
+						this.updateControlsForPlayer();
 						
 					} else if (cleanedString.includes("switch")) {
 						// "switch to pokemonName"
@@ -904,8 +937,28 @@
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
 						let sendString = `switch ${nearestPokemon}`;
-						console.log(`sending: ${sendString}`)
+						console.log(`sending: ${sendString}`);
+
 						this.sendDecision(sendString);
+
+						let switchNumber = '0';
+						for (let i = 0; i < switchables.length; i++) {
+							let currPokemon = switchables[i].name.toLowerCase();
+							if (currPokemon === nearestPokemon) {
+								switchNumber = `${i + 1}`;
+								break;
+							}
+							// console.log("SWITCHABLES: ", nearestPokemon, " : ", switchables[i], " : ", switchables[i].name.toLowerCase());
+						}
+
+						this.recognitionChoice = true;
+						this.recognitionMessage = cleanedString; 
+
+						this.choice.waiting = true;
+						this.choice.choices = [`switch ${switchNumber}`];
+
+						this.updateControlsForPlayer();
+
 					} else if (cleanedString.includes("choose")) {
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("choose")[1].trim();
@@ -913,8 +966,27 @@
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
 						let sendString = `switch ${nearestPokemon}`;
-						console.log(`sending: ${sendString}`)
+						console.log(`sending: ${sendString}`);
+
 						this.sendDecision(sendString);
+
+						let switchNumber = '0';
+						for (let i = 0; i < switchables.length; i++) {
+							let currPokemon = switchables[i].name.toLowerCase();
+							if (currPokemon === nearestPokemon) {
+								switchNumber = `${i + 1}`;
+								break;
+							}
+							// console.log("SWITCHABLES: ", nearestPokemon, " : ", switchables[i], " : ", switchables[i].name.toLowerCase());
+						}
+
+						this.recognitionChoice = true;
+						this.recognitionMessage = cleanedString; 
+
+						this.choice.waiting = true;
+						this.choice.choices = [`switch ${switchNumber}`];
+
+						this.updateControlsForPlayer();
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
@@ -926,6 +998,10 @@
 				});
 
 			}
+		},
+		sendHeard: function (message) {
+			var buf = '<div class="message"><div class="infobox"><div class="infotext">';
+			return buf;
 		},
 		displayParty: function (switchables, trapped) {
 			var party = '';
@@ -955,6 +1031,9 @@
 			return party;
 		},
 		updateSwitchControls: function (type) {
+			this.recognitionChoice = false;
+			this.recognitionMessage = '';
+
 			var pos = this.choice.choices.length;
 
 			// Needed so it client does not freak out when only 1 mon left wants to switch out
@@ -1112,7 +1191,7 @@
 				recognition.onresult = (event) => {
 					const transcript = event.results[0][0].transcript;
 					console.log(`You said: ${transcript}`);
-					this.send(`You said: ${transcript}`);
+					// this.send(`You said: ${transcript}`);
 
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("switch")) {
@@ -1122,16 +1201,55 @@
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
 						let sendString = `switch ${nearestPokemon}`;
-						console.log(`sending: ${sendString}`)
+						console.log(`sending: ${sendString}`);
+
 						this.sendDecision(sendString);
+
+						let switchNumber = '0';
+						for (let i = 0; i < switchables.length; i++) {
+							let currPokemon = switchables[i].name.toLowerCase();
+							if (currPokemon === nearestPokemon) {
+								switchNumber = `${i + 1}`;
+								break;
+							}
+						}
+
+						this.recognitionChoice = true;
+						this.recognitionMessage = cleanedString; 
+
+						this.choice.waiting = true;
+						this.choice.choices = [`switch ${switchNumber}`];
+
+						this.updateControlsForPlayer();
+
 					} else if (cleanedString.includes("choose")) {
 						let switchTo = cleanedString.split("choose")[1].trim();
 
 						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 
 						let sendString = `switch ${nearestPokemon}`;
-						console.log(`sending: ${sendString}`)
+						console.log(`sending: ${sendString}`);
+
 						this.sendDecision(sendString);
+
+						let switchNumber = '0';
+						for (let i = 0; i < switchables.length; i++) {
+							let currPokemon = switchables[i].name.toLowerCase();
+							if (currPokemon === nearestPokemon) {
+								switchNumber = `${i + 1}`;
+								break;
+							}
+							// console.log("SWITCHABLES: ", nearestPokemon, " : ", switchables[i], " : ", switchables[i].name.toLowerCase());
+						}
+
+						this.recognitionChoice = true;
+						this.recognitionMessage = cleanedString; 
+
+						this.choice.waiting = true;
+						this.choice.choices = [`switch ${switchNumber}`];
+
+						this.updateControlsForPlayer();
+
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
@@ -1194,6 +1312,9 @@
 
 		getPlayerChoicesHTML: function () {
 			var buf = '<p>' + this.getTimerHTML();
+			// console.log("HELLO1: ", this.choice, " : ", buf);
+			// console.log("HELLOOO: ", this.recognitionChoice, this.recognitionMessage);
+
 			if (!this.choice || !this.choice.waiting) {
 				return buf + '<em>Waiting for opponent...</em></p>';
 			}
@@ -1290,9 +1411,14 @@
 				}
 			}
 			buf += '</small></p>';
+			if (this.recognitionChoice) {
+				buf += `<p><small><b>You said: ${this.recognitionMessage}</b></small></p>`;
+			}
 			if (!this.finalDecision && !this.battle.hardcoreMode) {
 				buf += '<p><small><em>Waiting for opponent...</em></small> <button class="button" name="undoChoice">Cancel</button></p>';
 			}
+			// console.log("HELLO3: ", buf);
+
 			return buf;
 		},
 
@@ -1305,6 +1431,7 @@
 		 * correct request.)
 		 */
 		sendDecision: function (message) {
+			console.log("sendDecision: ", message);
 			if (!$.isArray(message)) return this.send('/' + message + '|' + this.request.rqid);
 			var buf = '/choose ';
 			for (var i = 0; i < message.length; i++) {
@@ -1510,7 +1637,6 @@
 				if (nearActive.length > 1 && target in choosableTargets) {
 					this.choice.type = 'movetarget';
 					this.choice.moveTarget = target;
-					console.log("HELP: updating control for player");
 					this.updateControlsForPlayer();
 					return false;
 				}
