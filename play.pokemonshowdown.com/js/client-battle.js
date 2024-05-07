@@ -53,6 +53,8 @@
 			this.$chat = this.$chatFrame.find('.inner');
 
 			this.$options = this.battle.scene.$options.html('<div style="padding-top: 3px; padding-right: 3px; text-align: right"><button class="icon button" name="openBattleOptions" title="Options">Battle Options</button></div>');
+
+			this.microphoneOn = false;
 		},
 		events: {
 			'click .replayDownloadButton': 'clickReplayDownloadButton',
@@ -804,46 +806,11 @@
 				);
 				this.$controls.html(
 					'<div class="controls">' +
-					'<button id="startButton">Start Speech Recognition</button>' + 
+					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					moveControls + shiftControls + switchControls +
 					'</div>'
 				);
-
-				function levenshteinDistance (a, b) {
-					// Compute the edit distance between the two strings
-					if (a.length === 0) return b.length;
-					if (b.length === 0) return a.length;
-		
-					const matrix = [];
-		
-					// increment along the first column of each row
-					let i;
-					for (i = 0; i <= b.length; i++) {
-						matrix[i] = [i];
-					}
-		
-					// increment each column in the first row
-					let j;
-					for (j = 0; j <= a.length; j++) {
-						matrix[0][j] = j;
-					}
-		
-					// Fill in the rest of the matrix
-					for (i = 1; i <= b.length; i++) {
-						for (j = 1; j <= a.length; j++) {
-							if (b.charAt(i - 1) === a.charAt(j - 1)) {
-								matrix[i][j] = matrix[i - 1][j - 1];
-							} else {
-								matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
-									Math.min(matrix[i][j - 1] + 1, // insertion
-										matrix[i - 1][j] + 1)); // deletion
-							}
-						}
-					}
-		
-					return matrix[b.length][a.length];
-				}
 
 				const moveNameList = [];
 				for (var i = 0; i < curActive.moves.length; i++) {
@@ -852,44 +819,12 @@
 					moveNameList.push(move.name.toLowerCase());
 				}
 
-				function getNearestMoveName(inputStr, moveList) {
-					// Get the closest matching move name from the list by edit distance
-					let lowerCaseInput = inputStr.toLowerCase();
-					let minDist = Infinity;
-					let closestMove = '';
-					for (let move of moveList) {
-						let dist = levenshteinDistance(lowerCaseInput, move);
-						console.log("dist: " + dist);
-						if (dist < minDist) {
-							minDist = dist;
-							closestMove = move;
-						}
-					}
-					return closestMove;
-				}
-
 				const switchablePokemonNames = [];
 				for (let pokemon of switchables) {
 					switchablePokemonNames.push(pokemon.name.toLowerCase());
 				}
 
-				function getNearestSwitchablePokemonName(inputStr, pokemonList) {
-					// Get the closest matching switchable pokemon name from the list by edit distance
-					let lowerCaseInput = inputStr.toLowerCase();
-					let minDist = Infinity;
-					let closestPokemon = '';
-					for (let pokemon of pokemonList) {
-						let dist = levenshteinDistance(lowerCaseInput, pokemon);
-						if (dist < minDist) {
-							minDist = dist;
-							closestPokemon = pokemon;
-						}
-					}
-					return closestPokemon;
-				}
-
-
-				const startButton = document.getElementById('startButton');
+				const toggleMicrophoneButton = document.getElementById('toggleMicrophoneButton');
 				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
 				// const recognition = new SpeechRecognition();
 				const recognition = new webkitSpeechRecognition();
@@ -903,9 +838,10 @@
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("use")) {
 						let move = cleanedString.split("use")[1].trim();
-						// console.log("possible moves");
-						// console.log(moveNameList);
-						const nearestMove = getNearestMoveName(move, moveNameList);
+						console.log("possible moves");
+						console.log(moveNameList);
+						const nearestMoveAndDistance = this.getNearestMoveName(move, moveNameList);
+						const nearestMove = nearestMoveAndDistance.move;
 
 						let sendString = `move ${nearestMove}`;
 						console.log(`sending: ${sendString}`);
@@ -934,7 +870,8 @@
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("to")[1].trim();
 
-						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemon = nearestPokemonAndDistance.move;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -990,11 +927,20 @@
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
-
+						recognition.start();
 					}
 				};
-				startButton.addEventListener('click', () => {
+
+				if (this.microphoneOn)	{
 					recognition.start();
+				}
+
+				toggleMicrophoneButton.addEventListener('click', () => {
+					this.microphoneOn = !this.microphoneOn;
+
+					if (this.microphoneOn) {
+						recognition.start();
+					}
 				});
 
 			}
@@ -1002,6 +948,37 @@
 		sendHeard: function (message) {
 			var buf = '<div class="message"><div class="infobox"><div class="infotext">';
 			return buf;
+		},
+		getNearestMoveName: function (inputStr, moveList) {
+			// Get the closest matching move name from the list by edit distance
+			// Returns closest move name and its edit distance
+			let lowerCaseInput = inputStr.toLowerCase();
+			let minDist = Infinity;
+			let closestMove = '';
+			for (let move of moveList) {
+				let dist = this.levenshteinDistance(lowerCaseInput, move);
+				console.log("dist: " + dist);
+				if (dist < minDist) {
+					minDist = dist;
+					closestMove = move;
+				}
+			}
+			return {move: closestMove, dist: minDist};
+		},
+		getNearestSwitchablePokemonName: function (inputStr, pokemonList) {
+			// Get the closest matching switchable pokemon name from the list by edit distance
+			// Returns closest pokemon name and its edit distance
+			let lowerCaseInput = inputStr.toLowerCase();
+			let minDist = Infinity;
+			let closestPokemon = '';
+			for (let pokemon of pokemonList) {
+				let dist = this.levenshteinDistance(lowerCaseInput, pokemon);
+				if (dist < minDist) {
+					minDist = dist;
+					closestPokemon = pokemon;
+				}
+			}
+			return {move: closestPokemon, dist: minDist};
 		},
 		displayParty: function (switchables, trapped) {
 			var party = '';
@@ -1121,69 +1098,19 @@
 				);
 				this.$controls.html(
 					'<div class="controls">' +
-					'<button id="startButton3">Start Speech Recognition</button>' + 
+					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					controls +
 					'</div>'
 				);
 				this.selectSwitch();
 
-				function levenshteinDistance (a, b) {
-					// Compute the edit distance between the two strings
-					if (a.length === 0) return b.length;
-					if (b.length === 0) return a.length;
-		
-					const matrix = [];
-		
-					// increment along the first column of each row
-					let i;
-					for (i = 0; i <= b.length; i++) {
-						matrix[i] = [i];
-					}
-		
-					// increment each column in the first row
-					let j;
-					for (j = 0; j <= a.length; j++) {
-						matrix[0][j] = j;
-					}
-		
-					// Fill in the rest of the matrix
-					for (i = 1; i <= b.length; i++) {
-						for (j = 1; j <= a.length; j++) {
-							if (b.charAt(i - 1) === a.charAt(j - 1)) {
-								matrix[i][j] = matrix[i - 1][j - 1];
-							} else {
-								matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
-									Math.min(matrix[i][j - 1] + 1, // insertion
-										matrix[i - 1][j] + 1)); // deletion
-							}
-						}
-					}
-		
-					return matrix[b.length][a.length];
-				}
-
 				const switchablePokemonNames = [];
 				for (let pokemon of switchables) {
 					switchablePokemonNames.push(pokemon.name.toLowerCase());
 				}
 
-				function getNearestSwitchablePokemonName(inputStr, pokemonList) {
-					// Get the closest matching switchable pokemon name from the list by edit distance
-					let lowerCaseInput = inputStr.toLowerCase();
-					let minDist = Infinity;
-					let closestPokemon = '';
-					for (let pokemon of pokemonList) {
-						let dist = levenshteinDistance(lowerCaseInput, pokemon);
-						if (dist < minDist) {
-							minDist = dist;
-							closestPokemon = pokemon;
-						}
-					}
-					return closestPokemon;
-				}
-
-				const startButton = document.getElementById('startButton3');
+				const toggleMicrophoneButton = document.getElementById('startButton3');
 				// const recognition = window.speechRecognition || window.webkitSpeechRecognition;
 				// const recognition = new SpeechRecognition();
 				const recognition = new webkitSpeechRecognition();
@@ -1198,7 +1125,8 @@
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("to")[1].trim();
 
-						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemon = nearestPokemonAndDistance.move;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -1225,7 +1153,8 @@
 					} else if (cleanedString.includes("choose")) {
 						let switchTo = cleanedString.split("choose")[1].trim();
 
-						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemon = nearestPokemonAndDistance.move;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -1253,13 +1182,56 @@
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
-
+						recognition.start();
 					}
 				};
-				startButton.addEventListener('click', () => {
+				
+				if (this.microphoneOn)	{
 					recognition.start();
+				}
+
+				toggleMicrophoneButton.addEventListener('click', () => {
+					this.microphoneOn = !this.microphoneOn;
+
+					if (this.microphoneOn) {
+						recognition.start();
+					}
 				});
 			}
+		},
+		levenshteinDistance: function (a, b) {
+			// Compute the edit distance between the two strings
+			if (a.length === 0) return b.length;
+			if (b.length === 0) return a.length;
+
+			const matrix = [];
+
+			// increment along the first column of each row
+			let i;
+			for (i = 0; i <= b.length; i++) {
+				matrix[i] = [i];
+			}
+
+			// increment each column in the first row
+			let j;
+			for (j = 0; j <= a.length; j++) {
+				matrix[0][j] = j;
+			}
+
+			// Fill in the rest of the matrix
+			for (i = 1; i <= b.length; i++) {
+				for (j = 1; j <= a.length; j++) {
+					if (b.charAt(i - 1) === a.charAt(j - 1)) {
+						matrix[i][j] = matrix[i - 1][j - 1];
+					} else {
+						matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
+							Math.min(matrix[i][j - 1] + 1, // insertion
+								matrix[i - 1][j] + 1)); // deletion
+					}
+				}
+			}
+
+			return matrix[b.length][a.length];
 		},
 		updateTeamControls: function (type) {
 			var switchables = this.request && this.request.side ? this.battle.myPokemon : [];
@@ -1733,7 +1705,7 @@
 			this.endTurn();
 		},
 		popupErrorVoice: function () {
-			app.addPopupMessage("Understanding Failed: Please try again");
+			app.addPopupMessage("Sorry, I didn't catch that. Could you please repeat?");
 		},
 		chooseDisabled: function (data) {
 			this.tooltips.hideTooltip();
