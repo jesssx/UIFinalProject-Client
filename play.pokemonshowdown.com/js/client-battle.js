@@ -942,10 +942,12 @@
 					recognition.start();
 				}
 
-				toggleMicrophoneButton.addEventListener('click', () => {
-					this.microphoneOn = !this.microphoneOn;
-					this.updateControlsForPlayer();
-				});
+				if (toggleMicrophoneButton) {
+					toggleMicrophoneButton.addEventListener('click', () => {
+						this.microphoneOn = !this.microphoneOn;
+						this.updateControlsForPlayer();
+					});
+				}
 
 			}
 		},
@@ -1196,10 +1198,12 @@
 					recognition.start();
 				}
 
-				toggleMicrophoneButton.addEventListener('click', () => {
-					this.microphoneOn = !this.microphoneOn;
-					this.updateControlsForPlayer();
-				});
+				if (toggleMicrophoneButton) {
+					toggleMicrophoneButton.addEventListener('click', () => {
+						this.microphoneOn = !this.microphoneOn;
+						this.updateControlsForPlayer();
+					});
+				}
 			}
 		},
 		levenshteinDistance: function (a, b) {
