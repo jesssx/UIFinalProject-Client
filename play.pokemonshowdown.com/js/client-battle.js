@@ -872,7 +872,7 @@
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("to")[1].trim();
 
-						const nearestPokemonAndDistance = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;
@@ -902,7 +902,7 @@
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("choose")[1].trim();
 
-						const nearestPokemonAndDistance = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;

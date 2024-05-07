@@ -347,6 +347,9 @@ export class BattleLog {
 			if (!line) return;
 			this.message(...this.parseLogMessage(line));
 
+			console.log("TEXT TO SPEECH:");
+			console.log(line);
+
 			// Add in voice for turns
 			const utterance = new SpeechSynthesisUtterance(line);
 
