@@ -347,18 +347,22 @@ export class BattleLog {
 			if (!line) return;
 			this.message(...this.parseLogMessage(line));
 
-			console.log("TEXT TO SPEECH:");
-			console.log(line);
+			let trimmedLine = line.trim();
 
-			// Add in voice for turns
-			const utterance = new SpeechSynthesisUtterance(line);
+			if (trimmedLine.length > 0 && trimmedLine[0] !== '(') {
 
-			// Select a voice
-			const voices = speechSynthesis.getVoices();
-			utterance.voice = voices[1]; // Choose a specific voice
-			
-			// Speak the text
-			window.speechSynthesis.speak(utterance);
+				// console.log("TEXT TO SPEECH:" + trimmedLine);
+
+				// Add in voice for turns
+				const utterance = new SpeechSynthesisUtterance(trimmedLine);
+
+				// Select a voice
+				const voices = speechSynthesis.getVoices();
+				utterance.voice = voices[1]; // Choose a specific voice
+				
+				// Speak the text
+				window.speechSynthesis.speak(utterance);
+			}
 			
 			break;
 		}
