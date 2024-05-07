@@ -807,8 +807,8 @@
 				const currentMicrophoneStatus = this.microphoneOn ? "On" : "Off";
 				this.$controls.html(
 					'<div class="controls">' +
-					'<div>Microphone Status: ' + currentMicrophoneStatus + '</div>' +
-					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
+					'<p>Microphone Status: ' + currentMicrophoneStatus + '</p>' +
+					'<p><button id="toggleMicrophoneButton" style="margin-bottom:1rem">Toggle Speech Recognition</button></p>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					moveControls + shiftControls + switchControls +
 					'</div>'
@@ -1099,8 +1099,8 @@
 				const currentMicrophoneStatus = this.microphoneOn ? "On" : "Off";
 				this.$controls.html(
 					'<div class="controls">' +
-					'<div>Microphone Status: ' + currentMicrophoneStatus + '</div>' +
-					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
+					'<p>Microphone Status: ' + currentMicrophoneStatus + '</p>' +
+					'<p><button id="toggleMicrophoneButton" style="margin-bottom:1rem">Toggle Speech Recognition</button></p>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					controls +
 					'</div>'
