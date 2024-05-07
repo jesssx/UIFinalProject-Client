@@ -804,8 +804,10 @@
 					'<div class="switchmenu">' + switchMenu + '</div>' +
 					'</div>'
 				);
+				const currentMicrophoneStatus = this.microphoneOn ? "On" : "Off";
 				this.$controls.html(
 					'<div class="controls">' +
+					'<div>Microphone Status: ' + currentMicrophoneStatus + '</div>' +
 					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					moveControls + shiftControls + switchControls +
@@ -871,7 +873,7 @@
 						let switchTo = cleanedString.split("to")[1].trim();
 
 						const nearestPokemonAndDistance = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
-						const nearestPokemon = nearestPokemonAndDistance.move;
+						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -900,7 +902,8 @@
 						// "switch to pokemonName"
 						let switchTo = cleanedString.split("choose")[1].trim();
 
-						const nearestPokemon = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemonAndDistance = getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
+						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -927,7 +930,7 @@
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
-						recognition.start();
+						this.updateControlsForPlayer();
 					}
 				};
 
@@ -937,10 +940,7 @@
 
 				toggleMicrophoneButton.addEventListener('click', () => {
 					this.microphoneOn = !this.microphoneOn;
-
-					if (this.microphoneOn) {
-						recognition.start();
-					}
+					this.updateControlsForPlayer();
 				});
 
 			}
@@ -978,7 +978,7 @@
 					closestPokemon = pokemon;
 				}
 			}
-			return {move: closestPokemon, dist: minDist};
+			return {pokemon: closestPokemon, dist: minDist};
 		},
 		displayParty: function (switchables, trapped) {
 			var party = '';
@@ -1096,8 +1096,10 @@
 					'<div class="switchmenu">' + switchMenu + '</div>' +
 					'</div>'
 				);
+				const currentMicrophoneStatus = this.microphoneOn ? "On" : "Off";
 				this.$controls.html(
 					'<div class="controls">' +
+					'<div>Microphone Status: ' + currentMicrophoneStatus + '</div>' +
 					'<button id="toggleMicrophoneButton">Toggle Speech Recognition</button>' + 
 					'<div class="whatdo">' + requestTitle + this.getTimerHTML() + '</div>' +
 					controls +
@@ -1126,7 +1128,7 @@
 						let switchTo = cleanedString.split("to")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
-						const nearestPokemon = nearestPokemonAndDistance.move;
+						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -1154,7 +1156,7 @@
 						let switchTo = cleanedString.split("choose")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
-						const nearestPokemon = nearestPokemonAndDistance.move;
+						const nearestPokemon = nearestPokemonAndDistance.pokemon;
 
 						let sendString = `switch ${nearestPokemon}`;
 						console.log(`sending: ${sendString}`);
@@ -1182,20 +1184,17 @@
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice();
-						recognition.start();
+						this.updateControlsForPlayer();
 					}
 				};
-				
+
 				if (this.microphoneOn)	{
 					recognition.start();
 				}
 
 				toggleMicrophoneButton.addEventListener('click', () => {
 					this.microphoneOn = !this.microphoneOn;
-
-					if (this.microphoneOn) {
-						recognition.start();
-					}
+					this.updateControlsForPlayer();
 				});
 			}
 		},
