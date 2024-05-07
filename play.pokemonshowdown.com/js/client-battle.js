@@ -927,9 +927,13 @@
 						this.choice.choices = [`switch ${switchNumber}`];
 
 						this.updateControlsForPlayer();
+					} else if (cleanedString.includes("chat")) {
+						let chatMessage = cleanedString.split("chat")[1].trim();
+						this.send(chatMessage);
+
 					} else {
 						//did not recognize keywords
-						this.popupErrorVoice();
+						this.popupErrorVoice(cleanedString);
 						this.updateControlsForPlayer();
 					}
 				};
@@ -944,10 +948,6 @@
 				});
 
 			}
-		},
-		sendHeard: function (message) {
-			var buf = '<div class="message"><div class="infobox"><div class="infotext">';
-			return buf;
 		},
 		getNearestMoveName: function (inputStr, moveList) {
 			// Get the closest matching move name from the list by edit distance
@@ -1181,9 +1181,13 @@
 
 						this.updateControlsForPlayer();
 
+					} else if (cleanedString.includes("chat")) {
+						let chatMessage = cleanedString.split("chat")[1].trim();
+						this.send(chatMessage);
+
 					} else {
 						//did not recognize keywords
-						this.popupErrorVoice();
+						this.popupErrorVoice(cleanedString);
 						this.updateControlsForPlayer();
 					}
 				};
@@ -1703,8 +1707,8 @@
 
 			this.endTurn();
 		},
-		popupErrorVoice: function () {
-			app.addPopupMessage("Sorry, I didn't catch that. Could you please repeat?");
+		popupErrorVoice: function (inputStr) {
+			app.addPopupMessage("Sorry, could you please repeat? I heard: " + inputStr);
 		},
 		chooseDisabled: function (data) {
 			this.tooltips.hideTooltip();
