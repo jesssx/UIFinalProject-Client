@@ -1314,12 +1314,17 @@
 			var buf = '<p>' + this.getTimerHTML();
 			// console.log("HELLO1: ", this.choice, " : ", buf);
 			// console.log("HELLOOO: ", this.recognitionChoice, this.recognitionMessage);
+			// if (this.recognitionChoice) {
+			// 	buf += `<p><small><b>You said: ${this.recognitionMessage}</b></small></p>`;
+			// }
 
 			if (!this.choice || !this.choice.waiting) {
 				return buf + '<em>Waiting for opponent...</em></p>';
 			}
 			buf += '<small>';
-
+			if (this.recognitionChoice) {
+				buf += `<p style="font-weight:bold">You said: ${this.recognitionMessage}</p><p>`;
+			}
 			if (this.choice.teamPreview) {
 				var myPokemon = this.battle.mySide.pokemon;
 				var leads = [];
@@ -1410,10 +1415,11 @@
 					}
 				}
 			}
-			buf += '</small></p>';
 			if (this.recognitionChoice) {
-				buf += `<p><small><b>You said: ${this.recognitionMessage}</b></small></p>`;
+				buf += '</p>';
 			}
+			buf += '</small></p>';
+
 			if (!this.finalDecision && !this.battle.hardcoreMode) {
 				buf += '<p><small><em>Waiting for opponent...</em></small> <button class="button" name="undoChoice">Cancel</button></p>';
 			}
