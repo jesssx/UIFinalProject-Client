@@ -930,7 +930,11 @@
 					} else if (cleanedString.includes("chat")) {
 						let chatMessage = cleanedString.split("chat")[1].trim();
 						this.send(chatMessage);
-
+						this.updateControlsForPlayer();
+					} else if (cleanedString.includes("tell him")) {
+						let chatMessage = cleanedString.split("tell him")[1].trim();
+						this.send(chatMessage);
+						this.updateControlsForPlayer();
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice(cleanedString);
@@ -1186,7 +1190,11 @@
 					} else if (cleanedString.includes("chat")) {
 						let chatMessage = cleanedString.split("chat")[1].trim();
 						this.send(chatMessage);
-
+						this.updateControlsForPlayer();
+					} else if (cleanedString.includes("tell him")) {
+						let chatMessage = cleanedString.split("tell him")[1].trim();
+						this.send(chatMessage);
+						this.updateControlsForPlayer();
 					} else {
 						//did not recognize keywords
 						this.popupErrorVoice(cleanedString);
