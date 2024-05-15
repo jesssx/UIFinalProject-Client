@@ -24,6 +24,11 @@ For security reasons, browsers [don't let other websites control PS][5], so they
 
 `const POKEMON_SHOWDOWN_TESTCLIENT_KEY = 'sid';`
 
+### Connecting to a Local Server
+In case the main Pokémon Showdown server is down, you can run and connect the client to a locally hosed server. To do this, clone the [Pokémon Showdown server](https://github.com/smogon/pokemon-showdown/tree/master) and follow the instructions [here](https://github.com/smogon/pokemon-showdown/blob/master/server/README.md) to start a local host. 
+
+Once the local host is running, you can connect the client by navigating to  `testclient.html?~~host:port`. For example, to connect to a server running locally on port 8000, you can navigate to  `testclient.html?~~localhost:8000`.
+
 [5]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 
     
