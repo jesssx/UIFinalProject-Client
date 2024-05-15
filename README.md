@@ -9,7 +9,7 @@ The project is deployed at https://uifinalproject-client2.onrender.com/. The web
 
 Local Testing 
 ------------------------------------------------------------------------
-The local version has been run on Ubuntu 22.04.3 LTS and ___. 
+The local version has been run on Ubuntu 22.04.3 LTS and MacOS Sonoma. 
 
 The client requires a build step. Install the latest Node.js (v14 or later), and run `node build` (on Windows) or `./build` (on other OSes) to build after cloning the repository. 
 
