@@ -33,5 +33,8 @@ For security reasons, browsers [don't let other websites control PS][5], so they
 Table of Contents
 ------------------------------------------------------------------------
 
- a list and explanation of each file i.e., basically a table of contents, so we don’t have to  
-figure out what’s what.
+The main directory relevant to our project is `play.pokemonshowdown.com`. Here, the `testclient.html` file serves the main client for users.
+
+The `src` directory in `pokemonshowdown.com` contains the Typescript files that are compiled into Javascript files that define all the functionality for the client upon build. 
+
+The `js` directory in `play.pokemonshowdown.com` contains the compiled Javascript files as well as the main Javascript files that call the compiled files to create the client. `client-battle.js` defines how battles operate. 
