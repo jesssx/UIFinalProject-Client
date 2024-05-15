@@ -839,7 +839,7 @@
 
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("use")) {
-						let move = cleanedString.split("use")[1].trim();
+						let move = this.splitOnce(cleanedString, "use")[1].trim();
 						console.log("possible moves");
 						console.log(moveNameList);
 						const nearestMoveAndDistance = this.getNearestMoveName(move, moveNameList);
@@ -870,7 +870,7 @@
 						
 					} else if (cleanedString.includes("switch")) {
 						// "switch to pokemonName"
-						let switchTo = cleanedString.split("to")[1].trim();
+						let switchTo = this.splitOnce(cleanedString, "to")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
@@ -900,7 +900,7 @@
 
 					} else if (cleanedString.includes("choose")) {
 						// "switch to pokemonName"
-						let switchTo = cleanedString.split("choose")[1].trim();
+						let switchTo = this.splitOnce(cleanedString, "choose")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
@@ -928,11 +928,11 @@
 
 						this.updateControlsForPlayer();
 					} else if (cleanedString.includes("chat")) {
-						let chatMessage = cleanedString.split("chat")[1].trim();
+						let chatMessage = this.splitOnce(cleanedString, "chat")[1].trim();
 						this.send(chatMessage);
 						this.updateControlsForPlayer();
 					} else if (cleanedString.includes("tell him")) {
-						let chatMessage = cleanedString.split("tell him")[1].trim();
+						let chatMessage = this.splitOnce(cleanedString, "tell him")[1].trim();
 						this.send(chatMessage);
 						this.updateControlsForPlayer();
 					} else {
@@ -985,6 +985,10 @@
 				}
 			}
 			return {pokemon: closestPokemon, dist: minDist};
+		},
+ 		splitOnce: function (s, substr) {
+			let components = s.split(substr);
+			return [components.shift(), components.join(substr)];
 		},
 		displayParty: function (switchables, trapped) {
 			var party = '';
@@ -1131,7 +1135,7 @@
 					let cleanedString = transcript.toLowerCase();
 					if (cleanedString.includes("switch")) {
 						// "switch to pokemonName"
-						let switchTo = cleanedString.split("to")[1].trim();
+						let switchTo = this.splitOnce(cleanedString, "to")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
@@ -1159,7 +1163,7 @@
 						this.updateControlsForPlayer();
 
 					} else if (cleanedString.includes("choose")) {
-						let switchTo = cleanedString.split("choose")[1].trim();
+						let switchTo = this.splitOnce(cleanedString, "choose")[1].trim();
 
 						const nearestPokemonAndDistance = this.getNearestSwitchablePokemonName(switchTo, switchablePokemonNames);
 						const nearestPokemon = nearestPokemonAndDistance.pokemon;
@@ -1188,11 +1192,11 @@
 						this.updateControlsForPlayer();
 
 					} else if (cleanedString.includes("chat")) {
-						let chatMessage = cleanedString.split("chat")[1].trim();
+						let chatMessage = this.splitOnce(cleanedString, "chat")[1].trim();
 						this.send(chatMessage);
 						this.updateControlsForPlayer();
 					} else if (cleanedString.includes("tell him")) {
-						let chatMessage = cleanedString.split("tell him")[1].trim();
+						let chatMessage = this.splitOnce(cleanedString, "tell him")[1].trim();
 						this.send(chatMessage);
 						this.updateControlsForPlayer();
 					} else {
